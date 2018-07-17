@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if DEBUG
+
+using System;
 
 using MinimalHttp.Client;
 
@@ -16,3 +18,5 @@ namespace MinimalHttp
         }
     }
 }
+
+#endif
