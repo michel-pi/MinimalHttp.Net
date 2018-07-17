@@ -3,7 +3,7 @@ using System.Text;
 
 namespace MinimalHttp.Client
 {
-    public class RequestParameter
+    public class HttpParameter
     {
         private static string[] delimeters = new string[] { "=", ":", "|", ",", " "};
         public static string DefaultDelimeter = "=";
@@ -22,17 +22,17 @@ namespace MinimalHttp.Client
             }
         }
 
-        public RequestParameter()
+        public HttpParameter()
         {
 
         }
 
-        public RequestParameter(string data)
+        public HttpParameter(string data)
         {
             ParseData(data, null);
         }
 
-        public RequestParameter(string key, string value)
+        public HttpParameter(string key, string value)
         {
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
 
@@ -40,7 +40,7 @@ namespace MinimalHttp.Client
             Value = value ?? "";
         }
 
-        public RequestParameter(string key, params string[] values)
+        public HttpParameter(string key, params string[] values)
         {
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
 
@@ -123,9 +123,9 @@ namespace MinimalHttp.Client
 
         public override bool Equals(object obj)
         {
-            if(obj is RequestParameter)
+            if(obj is HttpParameter)
             {
-                var param = (RequestParameter)obj;
+                var param = (HttpParameter)obj;
                 
                 return this.Key == param.Key && this.Value == param.Value;
             }
@@ -172,12 +172,12 @@ namespace MinimalHttp.Client
             }
         }
 
-        public static explicit operator RequestParameter(string data)
+        public static explicit operator HttpParameter(string data)
         {
-            return new RequestParameter(data);
+            return new HttpParameter(data);
         }
 
-        public static explicit operator string(RequestParameter parameter)
+        public static explicit operator string(HttpParameter parameter)
         {
             return parameter.ToString();
         }

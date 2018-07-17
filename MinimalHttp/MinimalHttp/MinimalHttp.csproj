@@ -42,6 +42,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client\HttpClientException.cs" />
+    <Compile Include="Client\HttpResponse.cs" />
+    <Compile Include="Client\HttpRequestMethod.cs" />
+    <Compile Include="Client\HttpParameter.cs" />
     <Compile Include="Library.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
