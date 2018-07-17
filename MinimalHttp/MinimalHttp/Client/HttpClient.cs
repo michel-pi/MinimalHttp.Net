@@ -44,7 +44,7 @@ namespace MinimalHttp.Client
             _cookieContainer = null;
         }
         
-        private HttpResponse Send(HttpRequestMethod method, string url)
+        public HttpResponse Send(HttpRequestMethod method, string url)
         {
             if (method == HttpRequestMethod.Unknown) throw new ArgumentException("The HttpRequestMethod " + method.ToString() + " is not supported!");
             if (string.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
@@ -130,7 +130,7 @@ namespace MinimalHttp.Client
                 response = (HttpWebResponse)ex.Response;
             }
             
-            if (response == null) throw new NullReferenceException("THe http response was null!");
+            if (response == null) throw new NullReferenceException("The http response was null!");
 
             Location = response.ResponseUri.OriginalString;
 
