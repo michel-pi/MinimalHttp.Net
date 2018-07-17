@@ -5,7 +5,7 @@ namespace MinimalHttp.Client
 {
     public class RequestParameter
     {
-        private static string[] delimeters = new string[] { "=", ":", "|", " " };
+        private static string[] delimeters = new string[] { "=", ":", "|", ",", " "};
         public static string DefaultDelimeter = "=";
 
         public string Key { get; set; }
