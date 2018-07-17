@@ -76,6 +76,8 @@ namespace MinimalHttp.Client
 
         private HttpResponse Send(HttpRequestMethod method, string url, string content_type, byte[] data)
         {
+            if (Encoding == null) Encoding = Encoding.UTF8;
+
             if (method == HttpRequestMethod.Unknown) throw new ArgumentException("The HttpRequestMethod " + method.ToString() + " is not supported!");
             if (string.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
 
