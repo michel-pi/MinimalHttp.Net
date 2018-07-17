@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client\HttpClientException.cs" />
+    <Compile Include="Client\HttpProxy.cs" />
     <Compile Include="Client\HttpResponse.cs" />
     <Compile Include="Client\HttpRequestMethod.cs" />
     <Compile Include="Client\HttpParameter.cs" />
