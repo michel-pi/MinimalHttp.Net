@@ -59,12 +59,64 @@ namespace MinimalHttp.Client
 
         public HttpResponse Get(string url, string data)
         {
-            return Send(HttpRequestMethod.Get, url); // append data to url
+            if (data == null) throw new ArgumentNullException(nameof(data));
+
+            if (data.Length == 0) return Get(url);
+
+            if (!data.StartsWith("?") && !url.EndsWith("?")) data = "?" + data;
+
+            return Send(HttpRequestMethod.Get, url + data);
         }
 
         public HttpResponse Get(string url, params string[] parameters)
         {
-            return Send(HttpRequestMethod.Get, url); // append data to url
+            if (!url.EndsWith("?")) url += "?";
+
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+
+            if (parameters.Length == 0) return Get(url);
+
+            for(int i = 0; i < parameters.Length - 1; i++)
+            {
+                url += parameters[i] + "=" + parameters[i + 1];
+            }
+
+            return Send(HttpRequestMethod.Get, url);
+        }
+
+        public HttpResponse Get(string url, params HttpParameter[] parameters)
+        {
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+
+            if (parameters.Length == 0) return Get(url);
+
+            if (!url.EndsWith("?")) url += "?";
+
+            foreach (var param in parameters)
+                url += param.ToString();
+
+            return Send(HttpRequestMethod.Get, url);
+        }
+
+        public HttpResponse Post(string url, string content_type, string data)
+        {
+            if (Encoding == null) Encoding = Encoding.UTF8;
+
+            if (data == null) throw new ArgumentNullException(nameof(data));
+
+            return Send(HttpRequestMethod.Post, url, content_type, Encoding.GetBytes(data));
+        }
+
+        public HttpResponse Post(string url, string content_type, byte[] data)
+        {
+            if (data == null) throw new ArgumentNullException(nameof(data));
+
+            return Send(HttpRequestMethod.Post, url, content_type, data);
+        }
+
+        public HttpResponse Head(string url)
+        {
+            return Send(HttpRequestMethod.Head, url);
         }
 
         private HttpResponse Send(HttpRequestMethod method, string url)
