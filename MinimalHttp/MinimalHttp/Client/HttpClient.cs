@@ -28,14 +28,18 @@ namespace MinimalHttp.Client
 
         public HttpClient()
         {
-            InitializeToDefault();
-        }
+            _cookieContainer = new CookieContainer();
 
-        public HttpClient(HttpProxy proxy)
-        {
-            InitializeToDefault();
+            Proxy = null;
 
-            Proxy = proxy;
+            UserAgent = DefaultUserAgent;
+
+            ClearReferer = false;
+            AllowAutoRedirect = true;
+            KeepAlive = true;
+
+            Location = string.Empty;
+            Referer = string.Empty;
         }
 
         ~HttpClient()
@@ -134,25 +138,7 @@ namespace MinimalHttp.Client
 
             Location = response.ResponseUri.OriginalString;
 
-            // TODO: CookieContainer???
-
             return new HttpResponse(response);
-        }
-
-        private void InitializeToDefault()
-        {
-            _cookieContainer = new CookieContainer();
-
-            Proxy = null;
-
-            UserAgent = DefaultUserAgent;
-
-            ClearReferer = false;
-            AllowAutoRedirect = true;
-            KeepAlive = true;
-
-            Location = string.Empty;
-            Referer = string.Empty;
         }
     }
 }
