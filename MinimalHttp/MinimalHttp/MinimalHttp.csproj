@@ -42,13 +42,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Client\HttpClientException.cs" />
+    <Compile Include="Client\HttpClient.cs" />
     <Compile Include="Client\HttpProxy.cs" />
     <Compile Include="Client\HttpResponse.cs" />
     <Compile Include="Client\HttpRequestMethod.cs" />
     <Compile Include="Client\HttpParameter.cs" />
     <Compile Include="Library.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Client\HttpUtilities.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
