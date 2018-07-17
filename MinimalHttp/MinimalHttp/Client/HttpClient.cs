@@ -26,6 +26,8 @@ namespace MinimalHttp.Client
         public string Location { get; private set; }
         public string Referer { get; private set; }
 
+        public Encoding Encoding { get; set; }
+
         public HttpClient()
         {
             _cookieContainer = new CookieContainer();
@@ -40,6 +42,8 @@ namespace MinimalHttp.Client
 
             Location = string.Empty;
             Referer = string.Empty;
+
+            Encoding = Encoding.UTF8;
         }
 
         ~HttpClient()
@@ -48,24 +52,46 @@ namespace MinimalHttp.Client
             _cookieContainer = null;
         }
         
-        public HttpResponse Send(HttpRequestMethod method, string url)
+        public HttpResponse Get(string url)
+        {
+            return Send(HttpRequestMethod.Get, url);
+        }
+
+        public HttpResponse Get(string url, string data)
+        {
+            return Send(HttpRequestMethod.Get, url); // append data to url
+        }
+
+        public HttpResponse Get(string url, params string[] parameters)
+        {
+            return Send(HttpRequestMethod.Get, url); // append data to url
+        }
+
+        private HttpResponse Send(HttpRequestMethod method, string url)
+        {
+            if (Encoding == null) Encoding = Encoding.UTF8;
+
+            return Send(method, url, null, null);
+        }
+
+        private HttpResponse Send(HttpRequestMethod method, string url, string content_type, byte[] data)
         {
             if (method == HttpRequestMethod.Unknown) throw new ArgumentException("The HttpRequestMethod " + method.ToString() + " is not supported!");
             if (string.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
 
             if (url.Contains(@"\")) url = url.Replace(@"\", @"/");
 
-            if(!Uri.TryCreate(url, UriKind.Absolute, out Uri uri))
+            if (!Uri.TryCreate(url, UriKind.Absolute, out Uri uri))
             {
                 throw new FormatException("Invalid url format: " + url);
             }
 
-            if(string.IsNullOrEmpty(Referer) && !ClearReferer)
+            if (string.IsNullOrEmpty(Referer) && !ClearReferer)
             {
                 Referer = Location;
                 Location = url;
             }
-            else if(ClearReferer)
+            else if (ClearReferer)
             {
                 Referer = string.Empty;
             }
@@ -82,7 +108,7 @@ namespace MinimalHttp.Client
 
             request.CachePolicy = new RequestCachePolicy(RequestCacheLevel.BypassCache);
 
-            if(Proxy == null || Proxy.IsEmpty)
+            if (Proxy == null || Proxy.IsEmpty)
             {
                 request.Proxy = null;
                 request.Credentials = null;
@@ -94,7 +120,7 @@ namespace MinimalHttp.Client
                 request.Credentials = null;
                 request.UseDefaultCredentials = true;
 
-                if(Proxy.HasCredentials)
+                if (Proxy.HasCredentials)
                 {
                     request.Credentials = (NetworkCredential)Proxy;
                     request.UseDefaultCredentials = false;
@@ -123,17 +149,29 @@ namespace MinimalHttp.Client
                     break;
             }
 
+            if (data != null && data.Length != 0)
+            {
+                if (content_type != null) request.ContentType = content_type;
+
+                request.ContentLength = data.Length;
+
+                using (var stream = request.GetRequestStream())
+                {
+                    stream.Write(data, 0, data.Length);
+                }
+            }
+
             HttpWebResponse response = null;
 
             try
             {
                 response = (HttpWebResponse)request.GetResponse();
             }
-            catch(WebException ex)
+            catch (WebException ex)
             {
                 response = (HttpWebResponse)ex.Response;
             }
-            
+
             if (response == null) throw new NullReferenceException("The http response was null!");
 
             Location = response.ResponseUri.OriginalString;
