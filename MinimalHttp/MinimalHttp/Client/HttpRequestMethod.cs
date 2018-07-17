@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace MinimalHttp.Client
 {
-    public enum RequestMethod
+    public enum HttpRequestMethod
     {
+        Unknown,
         Get,
         Post,
         Head,
