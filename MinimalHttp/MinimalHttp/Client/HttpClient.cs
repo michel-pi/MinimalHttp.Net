@@ -144,14 +144,14 @@ namespace MinimalHttp.Client
             return Send(HttpRequestMethod.Head, url);
         }
 
-        private HttpResponse Send(HttpRequestMethod method, string url)
+        public HttpResponse Send(HttpRequestMethod method, string url)
         {
             if (Encoding == null) Encoding = Encoding.UTF8;
 
             return Send(method, url, null, null);
         }
 
-        private HttpResponse Send(HttpRequestMethod method, string url, string content_type, byte[] data)
+        public HttpResponse Send(HttpRequestMethod method, string url, string content_type, byte[] data)
         {
             if (Encoding == null) Encoding = Encoding.UTF8;
 
