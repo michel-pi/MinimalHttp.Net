@@ -173,15 +173,21 @@ namespace MinimalHttp.Client
             if (!url.EndsWith("?")) url += "?";
 
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+            if (parameters.Length % 2 != 0) throw new ArgumentException("This method only supports an even number of parameters!", nameof(parameters));
 
             if (parameters.Length == 0) return Get(url);
 
-            for(int i = 0; i < parameters.Length - 1; i++)
+            StringBuilder builder = new StringBuilder(parameters.Length);
+
+            for (int i = 0; i < parameters.Length - 1; i++)
             {
-                url += parameters[i] + "=" + parameters[i + 1];
+                if (string.IsNullOrEmpty(parameters[i])) continue;
+                builder.Append(parameters[i].ToString() + "=" + parameters[i + 1] + "&");
             }
 
-            return Send(HttpRequestMethod.Get, url);
+            if (!string.IsNullOrEmpty(parameters[parameters.Length - 2])) builder.Append(parameters[parameters.Length - 2] + "=" + parameters[parameters.Length - 1]);
+
+            return Send(HttpRequestMethod.Get, url + builder.ToString());
         }
 
         /// <summary>
@@ -199,10 +205,17 @@ namespace MinimalHttp.Client
 
             if (!url.EndsWith("?")) url += "?";
 
-            foreach (var param in parameters)
-                url += param.ToString();
+            StringBuilder builder = new StringBuilder(parameters.Length);
 
-            return Send(HttpRequestMethod.Get, url);
+            for (int i = 0; i < parameters.Length - 1; i++)
+            {
+                if (parameters[i].IsEmpty) continue;
+                builder.Append(parameters[i].ToString() + "&");
+            }
+
+            if (!parameters[parameters.Length - 1].IsEmpty) builder.Append(parameters[parameters.Length - 1]);
+
+            return Send(HttpRequestMethod.Get, url + builder.ToString());
         }
 
         /// <summary>
@@ -244,9 +257,12 @@ namespace MinimalHttp.Client
             StringBuilder builder = new StringBuilder(parameters.Length);
 
             for (int i = 0; i < parameters.Length - 1; i++)
+            {
+                if (parameters[i].IsEmpty) continue;
                 builder.Append(parameters[i].ToString() + "&");
-
-            builder.Append(parameters[parameters.Length - 1]);
+            }
+                
+            if(!parameters[parameters.Length - 1].IsEmpty) builder.Append(parameters[parameters.Length - 1]);
 
             return Post(url, content_type, builder.ToString());
         }
