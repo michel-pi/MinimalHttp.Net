@@ -262,8 +262,8 @@ namespace MinimalHttp.Client
             {
                 response = (HttpWebResponse)ex.Response;
             }
-
-            if (response == null) throw new NullReferenceException("The http response was null!");
+            
+            if (response == null) throw new SslValidationException("Failed to verify ssl server certificate");
 
             Location = response.ResponseUri.OriginalString;
 
