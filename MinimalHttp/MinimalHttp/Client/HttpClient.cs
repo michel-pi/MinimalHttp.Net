@@ -107,6 +107,27 @@ namespace MinimalHttp.Client
             return Send(HttpRequestMethod.Post, url, content_type, Encoding.GetBytes(data));
         }
 
+        public HttpResponse Post(string url, string content_type, params HttpParameter[] parameters)
+        {
+            if (Encoding == null) Encoding = Encoding.UTF8;
+
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+
+            if(parameters.Length == 0)
+            {
+                return Send(HttpRequestMethod.Post, url, content_type, new byte[0]);
+            }
+
+            StringBuilder builder = new StringBuilder(parameters.Length);
+
+            for (int i = 0; i < parameters.Length - 1; i++)
+                builder.Append(parameters[i].ToString() + "&");
+
+            builder.Append(parameters[parameters.Length - 1]);
+
+            return Post(url, content_type, builder.ToString());
+        }
+
         public HttpResponse Post(string url, string content_type, byte[] data)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
