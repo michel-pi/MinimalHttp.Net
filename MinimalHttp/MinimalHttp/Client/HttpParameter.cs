@@ -3,14 +3,41 @@ using System.Text;
 
 namespace MinimalHttp.Client
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class HttpParameter
     {
+        /// <summary>
+        /// The delimeters
+        /// </summary>
         private static string[] delimeters = new string[] { "=", ":", "|", ",", " "};
+        /// <summary>
+        /// The default delimeter
+        /// </summary>
         public static string DefaultDelimeter = "=";
 
+        /// <summary>
+        /// Gets or sets the key.
+        /// </summary>
+        /// <value>
+        /// The key.
+        /// </value>
         public string Key { get; set; }
+        /// <summary>
+        /// Gets or sets the value.
+        /// </summary>
+        /// <value>
+        /// The value.
+        /// </value>
         public string Value { get; set; }
 
+        /// <summary>
+        /// Gets a value indicating whether this instance is empty.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is empty; otherwise, <c>false</c>.
+        /// </value>
         public bool IsEmpty
         {
             get
@@ -22,16 +49,29 @@ namespace MinimalHttp.Client
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HttpParameter"/> class.
+        /// </summary>
         public HttpParameter()
         {
 
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HttpParameter"/> class.
+        /// </summary>
+        /// <param name="data">The data.</param>
         public HttpParameter(string data)
         {
             ParseData(data, null);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HttpParameter"/> class.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <exception cref="ArgumentNullException">key</exception>
         public HttpParameter(string key, string value)
         {
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
@@ -40,6 +80,12 @@ namespace MinimalHttp.Client
             Value = value ?? "";
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HttpParameter"/> class.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="values">The values.</param>
+        /// <exception cref="ArgumentNullException">key</exception>
         public HttpParameter(string key, params string[] values)
         {
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
@@ -61,6 +107,19 @@ namespace MinimalHttp.Client
             }
         }
 
+        /// <summary>
+        /// Parses the data.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <param name="override_delimter">The override delimter.</param>
+        /// <exception cref="ArgumentNullException">data</exception>
+        /// <exception cref="FormatException">
+        /// The given string \"" + nameof(data) + "\" does not contain any supported delimeter!
+        /// or
+        /// The string \"" + nameof(data) + "\" could not be splitted by \"" + used_delimeter + "\"!
+        /// or
+        /// The parsed data doesn't contain any values!
+        /// </exception>
         private void ParseData(string data, string override_delimter)
         {
             if (string.IsNullOrEmpty(data)) throw new ArgumentNullException(nameof(data));
@@ -121,6 +180,13 @@ namespace MinimalHttp.Client
             }
         }
 
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
         public override bool Equals(object obj)
         {
             if(obj is HttpParameter)
@@ -133,6 +199,12 @@ namespace MinimalHttp.Client
             return base.Equals(obj);
         }
 
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
         public override int GetHashCode()
         {
             if(this.IsEmpty && this.Value != null)
@@ -147,6 +219,12 @@ namespace MinimalHttp.Client
             return base.GetHashCode();
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             if (this.IsEmpty) return string.Empty;
@@ -172,11 +250,25 @@ namespace MinimalHttp.Client
             }
         }
 
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="System.String"/> to <see cref="HttpParameter"/>.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
         public static explicit operator HttpParameter(string data)
         {
             return new HttpParameter(data);
         }
 
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="HttpParameter"/> to <see cref="System.String"/>.
+        /// </summary>
+        /// <param name="parameter">The parameter.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
         public static explicit operator string(HttpParameter parameter)
         {
             return parameter.ToString();

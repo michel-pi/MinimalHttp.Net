@@ -7,31 +7,105 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace MinimalHttp.Client
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class HttpClient
     {
+        /// <summary>
+        /// The default user agent
+        /// </summary>
         public static string DefaultUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0";
 
+        /// <summary>
+        /// The mozilla user agent
+        /// </summary>
         public static readonly string MozillaUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0";
+        /// <summary>
+        /// The chrome user agent
+        /// </summary>
         public static readonly string ChromeUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36";
 
         private CookieContainer _cookieContainer;
 
+        /// <summary>
+        /// Gets or sets the proxy.
+        /// </summary>
+        /// <value>
+        /// The proxy.
+        /// </value>
         public HttpProxy Proxy { get; set; }
 
+        /// <summary>
+        /// Gets or sets the user agent.
+        /// </summary>
+        /// <value>
+        /// The user agent.
+        /// </value>
         public string UserAgent { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [clear referer].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [clear referer]; otherwise, <c>false</c>.
+        /// </value>
         public bool ClearReferer { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether [allow automatic redirect].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [allow automatic redirect]; otherwise, <c>false</c>.
+        /// </value>
         public bool AllowAutoRedirect { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether [keep alive].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [keep alive]; otherwise, <c>false</c>.
+        /// </value>
         public bool KeepAlive { get; set; }
 
+        /// <summary>
+        /// Gets the location.
+        /// </summary>
+        /// <value>
+        /// The location.
+        /// </value>
         public string Location { get; private set; }
+        /// <summary>
+        /// Gets the referer.
+        /// </summary>
+        /// <value>
+        /// The referer.
+        /// </value>
         public string Referer { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the encoding.
+        /// </summary>
+        /// <value>
+        /// The encoding.
+        /// </value>
         public Encoding Encoding { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="certificate">The certificate.</param>
+        /// <returns></returns>
         public delegate bool CertificateValidation(HttpCertificate certificate);
+        /// <summary>
+        /// Gets or sets the certificate validation callback.
+        /// </summary>
+        /// <value>
+        /// The certificate validation callback.
+        /// </value>
         public CertificateValidation CertificateValidationCallback { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HttpClient"/> class.
+        /// </summary>
         public HttpClient()
         {
             _cookieContainer = new CookieContainer();
@@ -50,17 +124,32 @@ namespace MinimalHttp.Client
             Encoding = Encoding.UTF8;
         }
 
+        /// <summary>
+        /// Finalizes an instance of the <see cref="HttpClient"/> class.
+        /// </summary>
         ~HttpClient()
         {
             Proxy = null;
             _cookieContainer = null;
         }
-        
+
+        /// <summary>
+        /// Gets the specified URL.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <returns></returns>
         public HttpResponse Get(string url)
         {
             return Send(HttpRequestMethod.Get, url);
         }
 
+        /// <summary>
+        /// Gets the specified URL.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">data</exception>
         public HttpResponse Get(string url, string data)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
@@ -72,6 +161,13 @@ namespace MinimalHttp.Client
             return Send(HttpRequestMethod.Get, url + data);
         }
 
+        /// <summary>
+        /// Gets the specified URL.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">parameters</exception>
         public HttpResponse Get(string url, params string[] parameters)
         {
             if (!url.EndsWith("?")) url += "?";
@@ -88,6 +184,13 @@ namespace MinimalHttp.Client
             return Send(HttpRequestMethod.Get, url);
         }
 
+        /// <summary>
+        /// Gets the specified URL.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">parameters</exception>
         public HttpResponse Get(string url, params HttpParameter[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
@@ -102,6 +205,14 @@ namespace MinimalHttp.Client
             return Send(HttpRequestMethod.Get, url);
         }
 
+        /// <summary>
+        /// Posts the specified URL.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <param name="content_type">Type of the content.</param>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">data</exception>
         public HttpResponse Post(string url, string content_type, string data)
         {
             if (Encoding == null) Encoding = Encoding.UTF8;
@@ -111,6 +222,14 @@ namespace MinimalHttp.Client
             return Send(HttpRequestMethod.Post, url, content_type, Encoding.GetBytes(data));
         }
 
+        /// <summary>
+        /// Posts the specified URL.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <param name="content_type">Type of the content.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">parameters</exception>
         public HttpResponse Post(string url, string content_type, params HttpParameter[] parameters)
         {
             if (Encoding == null) Encoding = Encoding.UTF8;
@@ -132,6 +251,14 @@ namespace MinimalHttp.Client
             return Post(url, content_type, builder.ToString());
         }
 
+        /// <summary>
+        /// Posts the specified URL.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <param name="content_type">Type of the content.</param>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">data</exception>
         public HttpResponse Post(string url, string content_type, byte[] data)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
@@ -139,11 +266,22 @@ namespace MinimalHttp.Client
             return Send(HttpRequestMethod.Post, url, content_type, data);
         }
 
+        /// <summary>
+        /// Heads the specified URL.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <returns></returns>
         public HttpResponse Head(string url)
         {
             return Send(HttpRequestMethod.Head, url);
         }
 
+        /// <summary>
+        /// Sends the specified method.
+        /// </summary>
+        /// <param name="method">The method.</param>
+        /// <param name="url">The URL.</param>
+        /// <returns></returns>
         public HttpResponse Send(HttpRequestMethod method, string url)
         {
             if (Encoding == null) Encoding = Encoding.UTF8;
@@ -151,6 +289,18 @@ namespace MinimalHttp.Client
             return Send(method, url, null, null);
         }
 
+        /// <summary>
+        /// Sends the specified method.
+        /// </summary>
+        /// <param name="method">The method.</param>
+        /// <param name="url">The URL.</param>
+        /// <param name="content_type">Type of the content.</param>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">The HttpRequestMethod " + method.ToString() + " is not supported!</exception>
+        /// <exception cref="ArgumentNullException">url</exception>
+        /// <exception cref="FormatException">Invalid url format: " + url</exception>
+        /// <exception cref="MinimalHttp.Client.SslValidationException">Failed to verify ssl server certificate</exception>
         public HttpResponse Send(HttpRequestMethod method, string url, string content_type, byte[] data)
         {
             if (Encoding == null) Encoding = Encoding.UTF8;
