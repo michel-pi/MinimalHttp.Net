@@ -12,6 +12,8 @@ namespace MinimalHttp.Client
         public Uri ResponseUri { get; private set; }
         public string Server { get; private set; }
 
+        public HttpCertificate Certificate { get; private set; }
+
         public HttpParameter[] Headers { get; private set; }
 
         public HttpRequestMethod Method { get; private set; }
@@ -43,7 +45,7 @@ namespace MinimalHttp.Client
             {
                 StatusCode = (int)response.StatusCode;
             }
-            catch(ObjectDisposedException)
+            catch (ObjectDisposedException)
             {
                 throw new InvalidOperationException("HttpWebResponse is already disposed!");
             }
@@ -60,7 +62,7 @@ namespace MinimalHttp.Client
 
             LastModified = response.LastModified;
 
-            if(Enum.TryParse<HttpRequestMethod>(response.Method, true, out HttpRequestMethod result))
+            if (Enum.TryParse<HttpRequestMethod>(response.Method, true, out HttpRequestMethod result))
             {
                 Method = result;
             }
@@ -102,6 +104,11 @@ namespace MinimalHttp.Client
             }
 
             response.Dispose();
+        }
+
+        public HttpResponse(HttpWebResponse response, HttpCertificate cert) : this(response)
+        {
+            Certificate = cert;
         }
     }
 }

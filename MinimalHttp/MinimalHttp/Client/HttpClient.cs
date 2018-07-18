@@ -250,7 +250,14 @@ namespace MinimalHttp.Client
 
             Location = response.ResponseUri.OriginalString;
 
-            return new HttpResponse(response);
+            if (request.ServicePoint != null && request.ServicePoint.Certificate != null)
+            {
+                return new HttpResponse(response, new HttpCertificate(request.ServicePoint.Certificate));
+            }
+            else
+            {
+                return new HttpResponse(response);
+            }
         }
     }
 }
