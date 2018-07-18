@@ -16,14 +16,12 @@ namespace MinimalHttp
             {
                 if (certificate == null) return false;
 
-                var result = certificate.Equals(System.IO.File.ReadAllBytes("ssl_cert.crt"));
-
-                return result;
+                return certificate.ValidatePeriod();
             };
 
             try
             {
-                var response = client.Get("https://chromacheats.com");
+                var response = client.Get("https://google.com");
             }
             catch(SslValidationException ssl_exception)
             {
