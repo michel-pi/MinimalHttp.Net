@@ -2,6 +2,8 @@
 using System.Text;
 using System.Net;
 using System.Net.Cache;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MinimalHttp.Client
 {
@@ -26,6 +28,9 @@ namespace MinimalHttp.Client
         public string Referer { get; private set; }
 
         public Encoding Encoding { get; set; }
+
+        public delegate bool CertificateValidation(HttpCertificate certificate);
+        public CertificateValidation CertificateValidationCallback { get; set; }
 
         public HttpClient()
         {
@@ -171,6 +176,18 @@ namespace MinimalHttp.Client
             }
 
             HttpWebRequest request = WebRequest.CreateHttp(uri);
+
+            if (CertificateValidationCallback != null)
+            {
+                request.ServerCertificateValidationCallback = (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) =>
+                {
+                    var callback = CertificateValidationCallback;
+
+                    if (callback == null) return true;
+
+                    return callback.Invoke(new HttpCertificate(certificate));
+                };
+            }
 
             request.AllowAutoRedirect = AllowAutoRedirect;
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
