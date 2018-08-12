@@ -1,26 +1,37 @@
 # MinimalHttp.Net
 
-MinimalHttp.Net is a simple and easy to use http client.
+A simple and easy to use http client with support for certificate pinning 
 
 ### NuGet
 
     Install-Package MinimalHttp.Net
 
-### Features
+# Features
 
-- HttpClient GET, POST, HEAD, PUT, DELETE
+- GET, POST, HEAD, PUT, DELETE
+- Allows Proxy usage
 - Certificate pinning
 - Exception handling and input validation
 - URLEncode & URLDecode
+- Crafting content-type parameters
+- Custom encoding support (Default: UTF8)
 
-### Contribute
+# Contribute
 
-Help me on the following things
+Clone or download the repository.
 
-- Provide a better documentation
-- Suggest features
-- Report bugs via Github Issues (or maybe fix them)
+Help adding features, fixing issues or provide a better documentation.
+
+# Donate
+Do you like this project and want to give something back?
+
+[![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YJDWMDUSM8KKQ)
+
+```
+BTC 1PG3wsY4Znz3ubYkFM8b8NTfrhKcNK4NMG
+ETH 0xd9E2CB12d310E7BF5E72F591D7A2b8820adced04
+```
 
 ### License
 
-- [MinimalHttp.Net License](https://github.com/michel-pi/MinimalHttp.Net/blob/master/LICENSE.md "MinimalHttp.Net License")
+- [MinimalHttp.Net License](https://github.com/michel-pi/MinimalHttp.Net/blob/master/LICENSE "MinimalHttp.Net License")
