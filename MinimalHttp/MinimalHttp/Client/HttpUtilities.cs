@@ -3,12 +3,11 @@
 namespace MinimalHttp.Client
 {
     /// <summary>
-    /// 
     /// </summary>
     public class HttpUtilities
     {
         /// <summary>
-        /// URLs the encode.
+        ///     URLs the encode.
         /// </summary>
         /// <param name="text">The text.</param>
         /// <returns></returns>
@@ -18,7 +17,7 @@ namespace MinimalHttp.Client
         }
 
         /// <summary>
-        /// URLs the decode.
+        ///     URLs the decode.
         /// </summary>
         /// <param name="text">The text.</param>
         /// <returns></returns>
@@ -28,7 +27,7 @@ namespace MinimalHttp.Client
         }
 
         /// <summary>
-        /// Creates the type of the content.
+        ///     Creates the type of the content.
         /// </summary>
         /// <param name="mime_type">Type of the MIME.</param>
         /// <param name="charset">The charset.</param>
@@ -55,12 +54,11 @@ namespace MinimalHttp.Client
                 concenations++;
             }
 
-            if (!string.IsNullOrEmpty(boundary))
-            {
-                if (concenations > 0) result += "; ";
+            if (string.IsNullOrEmpty(boundary)) return result;
 
-                result += boundary;
-            }
+            if (concenations > 0) result += "; ";
+
+            result += boundary;
 
             return result;
         }

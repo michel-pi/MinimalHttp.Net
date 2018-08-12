@@ -1,38 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MinimalHttp.Client
+﻿namespace MinimalHttp.Client
 {
     /// <summary>
-    /// 
     /// </summary>
     public enum HttpRequestMethod
     {
         /// <summary>
-        /// The unknown
+        ///     The unknown
         /// </summary>
         Unknown,
+
         /// <summary>
-        /// The get
+        ///     The get
         /// </summary>
         Get,
+
         /// <summary>
-        /// The post
+        ///     The post
         /// </summary>
         Post,
+
         /// <summary>
-        /// The head
+        ///     The head
         /// </summary>
         Head,
+
         /// <summary>
-        /// The put
+        ///     The put
         /// </summary>
         Put,
+
         /// <summary>
-        /// The delete
+        ///     The delete
         /// </summary>
         Delete
     }

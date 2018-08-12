@@ -1,90 +1,30 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 
 namespace MinimalHttp.Client
 {
     /// <summary>
-    /// 
     /// </summary>
     public class HttpProxy
     {
         /// <summary>
-        /// The web proxy
-        /// </summary>
-        private WebProxy _webProxy;
-        /// <summary>
-        /// The credentials
+        ///     The credentials
         /// </summary>
         private NetworkCredential _credentials;
 
         /// <summary>
-        /// Gets the address.
+        ///     The web proxy
         /// </summary>
-        /// <value>
-        /// The address.
-        /// </value>
-        public string Address { get; private set; }
-        /// <summary>
-        /// Gets the port.
-        /// </summary>
-        /// <value>
-        /// The port.
-        /// </value>
-        public int Port { get; private set; }
+        private WebProxy _webProxy;
 
         /// <summary>
-        /// Gets the username.
-        /// </summary>
-        /// <value>
-        /// The username.
-        /// </value>
-        public string Username { get; private set; }
-        /// <summary>
-        /// Gets the password.
-        /// </summary>
-        /// <value>
-        /// The password.
-        /// </value>
-        public string Password { get; private set; }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is empty.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance is empty; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsEmpty
-        {
-            get
-            {
-                return _webProxy == null;
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance has credentials.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance has credentials; otherwise, <c>false</c>.
-        /// </value>
-        public bool HasCredentials
-        {
-            get
-            {
-                return _credentials != null;
-            }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HttpProxy"/> class.
+        ///     Initializes a new instance of the <see cref="HttpProxy" /> class.
         /// </summary>
         public HttpProxy()
         {
-
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpProxy"/> class.
+        ///     Initializes a new instance of the <see cref="HttpProxy" /> class.
         /// </summary>
         /// <param name="address">The address.</param>
         public HttpProxy(string address)
@@ -95,7 +35,7 @@ namespace MinimalHttp.Client
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpProxy"/> class.
+        ///     Initializes a new instance of the <see cref="HttpProxy" /> class.
         /// </summary>
         /// <param name="address">The address.</param>
         /// <param name="port">The port.</param>
@@ -108,7 +48,7 @@ namespace MinimalHttp.Client
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpProxy"/> class.
+        ///     Initializes a new instance of the <see cref="HttpProxy" /> class.
         /// </summary>
         /// <param name="address">The address.</param>
         /// <param name="username">The username.</param>
@@ -122,7 +62,7 @@ namespace MinimalHttp.Client
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpProxy"/> class.
+        ///     Initializes a new instance of the <see cref="HttpProxy" /> class.
         /// </summary>
         /// <param name="address">The address.</param>
         /// <param name="port">The port.</param>
@@ -138,7 +78,55 @@ namespace MinimalHttp.Client
         }
 
         /// <summary>
-        /// Finalizes an instance of the <see cref="HttpProxy"/> class.
+        ///     Gets the address.
+        /// </summary>
+        /// <value>
+        ///     The address.
+        /// </value>
+        public string Address { get; }
+
+        /// <summary>
+        ///     Gets the port.
+        /// </summary>
+        /// <value>
+        ///     The port.
+        /// </value>
+        public int Port { get; }
+
+        /// <summary>
+        ///     Gets the username.
+        /// </summary>
+        /// <value>
+        ///     The username.
+        /// </value>
+        public string Username { get; private set; }
+
+        /// <summary>
+        ///     Gets the password.
+        /// </summary>
+        /// <value>
+        ///     The password.
+        /// </value>
+        public string Password { get; private set; }
+
+        /// <summary>
+        ///     Gets a value indicating whether this instance is empty.
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if this instance is empty; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsEmpty => _webProxy == null;
+
+        /// <summary>
+        ///     Gets a value indicating whether this instance has credentials.
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if this instance has credentials; otherwise, <c>false</c>.
+        /// </value>
+        public bool HasCredentials => _credentials != null;
+
+        /// <summary>
+        ///     Finalizes an instance of the <see cref="HttpProxy" /> class.
         /// </summary>
         ~HttpProxy()
         {
@@ -147,11 +135,11 @@ namespace MinimalHttp.Client
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="HttpProxy"/> to <see cref="WebProxy"/>.
+        ///     Performs an explicit conversion from <see cref="HttpProxy" /> to <see cref="WebProxy" />.
         /// </summary>
         /// <param name="proxy">The proxy.</param>
         /// <returns>
-        /// The result of the conversion.
+        ///     The result of the conversion.
         /// </returns>
         public static explicit operator WebProxy(HttpProxy proxy)
         {
@@ -159,11 +147,11 @@ namespace MinimalHttp.Client
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="HttpProxy"/> to <see cref="NetworkCredential"/>.
+        ///     Performs an explicit conversion from <see cref="HttpProxy" /> to <see cref="NetworkCredential" />.
         /// </summary>
         /// <param name="proxy">The proxy.</param>
         /// <returns>
-        /// The result of the conversion.
+        ///     The result of the conversion.
         /// </returns>
         public static explicit operator NetworkCredential(HttpProxy proxy)
         {
