@@ -48,7 +48,7 @@ namespace MinimalHttp.Client
 
             LastModified = response.LastModified;
 
-            Method = Enum.TryParse(response.Method, true, out HttpRequestMethod result) ? result : HttpRequestMethod.Unknown;
+            Method = HelperMethods.StringToRequestMethod(response.Method);
 
             ProtocolVersion = response.ProtocolVersion.ToString();
 

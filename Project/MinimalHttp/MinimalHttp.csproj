@@ -54,6 +54,7 @@
     <Compile Include="Client\HttpRequestMethod.cs" />
     <Compile Include="Client\HttpParameter.cs" />
     <Compile Include="Client\SslValidationException.cs" />
+    <Compile Include="HelperMethods.cs" />
     <Compile Include="Library.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
