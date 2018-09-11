@@ -324,7 +324,7 @@ namespace MinimalHttp.Client
             if (Encoding == null) Encoding = Encoding.UTF8;
 
             if (method == HttpRequestMethod.Unknown)
-                throw new ArgumentException("The HttpRequestMethod " + method + " is not supported!");
+                throw new ArgumentException("The HttpRequestMethod Unknown is not supported!");
             if (string.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
 
             if (url.Contains(@"\")) url = url.Replace(@"\", @"/");
