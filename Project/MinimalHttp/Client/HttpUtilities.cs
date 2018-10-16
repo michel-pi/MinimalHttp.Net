@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net;
+using System.Net.Sockets;
 
 namespace MinimalHttp.Client
 {
@@ -6,6 +8,32 @@ namespace MinimalHttp.Client
     /// </summary>
     public class HttpUtilities
     {
+        public static IPAddress DnsResolve(string urlIpOrHostname)
+        {
+            if (string.IsNullOrEmpty(urlIpOrHostname)) throw new ArgumentNullException(nameof(urlIpOrHostname));
+
+            if(IPAddress.TryParse(urlIpOrHostname, out IPAddress parsedAddress))
+            {
+                return parsedAddress;
+            }
+            
+            if (Uri.TryCreate(urlIpOrHostname, UriKind.Absolute, out Uri uri))
+            {
+                urlIpOrHostname = uri.DnsSafeHost;
+            }
+
+            var resolved = Dns.GetHostAddresses(urlIpOrHostname);
+
+            if (resolved == null || resolved.Length == 0) return IPAddress.None;
+
+            foreach(var ip in resolved)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork) return ip;
+            }
+
+            return resolved[0];
+        }
+
         /// <summary>
         ///     URLs the encode.
         /// </summary>
@@ -36,27 +64,27 @@ namespace MinimalHttp.Client
         public static string CreateContentType(string mime_type, string charset = null, string boundary = null)
         {
             string result = "";
-            int concenations = 0;
+            int concatenations = 0;
 
             if (!string.IsNullOrEmpty(mime_type))
             {
                 result += mime_type;
 
-                concenations++;
+                concatenations++;
             }
 
             if (!string.IsNullOrEmpty(charset))
             {
-                if (concenations > 0) result += "; ";
+                if (concatenations > 0) result += "; ";
 
                 result += charset;
 
-                concenations++;
+                concatenations++;
             }
 
             if (string.IsNullOrEmpty(boundary)) return result;
 
-            if (concenations > 0) result += "; ";
+            if (concatenations > 0) result += "; ";
 
             result += boundary;
 

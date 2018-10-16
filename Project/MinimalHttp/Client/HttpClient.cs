@@ -54,6 +54,11 @@ namespace MinimalHttp.Client
         }
 
         /// <summary>
+        ///     Gets or sets the host
+        /// </summary>
+        public string Host { get; set; }
+
+        /// <summary>
         ///     Gets or sets the proxy.
         /// </summary>
         /// <value>
@@ -364,6 +369,11 @@ namespace MinimalHttp.Client
 
             request.CachePolicy = new RequestCachePolicy(RequestCacheLevel.BypassCache);
 
+            if(!string.IsNullOrEmpty(Host))
+            {
+                request.Host = Host;
+            }
+
             if (Proxy == null || Proxy.IsEmpty)
             {
                 request.Proxy = null;
@@ -428,7 +438,17 @@ namespace MinimalHttp.Client
                 response = (HttpWebResponse) ex.Response;
             }
 
-            Location = response?.ResponseUri.OriginalString ?? throw new SslValidationException("Failed to verify ssl server certificate");
+            if(response == null)
+            {
+                throw new SslValidationException("Failed to verify server ssl certificate");
+            }
+            else if(response.ResponseUri == null)
+            {
+                response.Dispose();
+                throw new SslValidationException("Failed to verify server ssl certificate");
+            }
+
+            Location = response.ResponseUri.OriginalString;
 
             return request.ServicePoint.Certificate != null ? new HttpResponse(response, new HttpCertificate(request.ServicePoint.Certificate)) : new HttpResponse(response);
         }
