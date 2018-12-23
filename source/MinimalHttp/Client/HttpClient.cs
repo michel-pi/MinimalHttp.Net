@@ -33,27 +33,6 @@ namespace MinimalHttp.Client
         private CookieContainer _cookieContainer;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="HttpClient" /> class.
-        /// </summary>
-        public HttpClient()
-        {
-            _cookieContainer = new CookieContainer();
-
-            Proxy = null;
-
-            UserAgent = DefaultUserAgent;
-
-            ClearReferer = false;
-            AllowAutoRedirect = true;
-            KeepAlive = true;
-
-            Location = string.Empty;
-            Referer = string.Empty;
-
-            Encoding = Encoding.UTF8;
-        }
-
-        /// <summary>
         ///     Gets or sets the host
         /// </summary>
         public string Host { get; set; }
@@ -75,6 +54,14 @@ namespace MinimalHttp.Client
         public string UserAgent { get; set; }
 
         /// <summary>
+        ///     Gets or sets the timeout.
+        /// </summary>
+        /// <value>
+        ///     The timeout.
+        /// </value>
+        public int Timeout { get; set; }
+
+        /// <summary>
         ///     Gets or sets a value indicating whether [clear referer].
         /// </summary>
         /// <value>
@@ -89,14 +76,6 @@ namespace MinimalHttp.Client
         ///     <c>true</c> if [allow automatic redirect]; otherwise, <c>false</c>.
         /// </value>
         public bool AllowAutoRedirect { get; set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether [keep alive].
-        /// </summary>
-        /// <value>
-        ///     <c>true</c> if [keep alive]; otherwise, <c>false</c>.
-        /// </value>
-        public bool KeepAlive { get; set; }
 
         /// <summary>
         ///     Gets the location.
@@ -130,6 +109,28 @@ namespace MinimalHttp.Client
         /// </value>
         public CertificateValidation CertificateValidationCallback { get; set; }
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="HttpClient" /> class.
+        /// </summary>
+        public HttpClient()
+        {
+            _cookieContainer = new CookieContainer();
+
+            Proxy = null;
+
+            UserAgent = DefaultUserAgent;
+
+            Timeout = 300 * 1000; // default apache timeout
+
+            ClearReferer = false;
+            AllowAutoRedirect = true;
+
+            Location = string.Empty;
+            Referer = string.Empty;
+
+            Encoding = Encoding.UTF8;
+        }
+        
         /// <summary>
         ///     Finalizes an instance of the <see cref="HttpClient" /> class.
         /// </summary>
@@ -362,8 +363,8 @@ namespace MinimalHttp.Client
             request.AllowAutoRedirect = AllowAutoRedirect;
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             request.CookieContainer = _cookieContainer;
-            request.KeepAlive = KeepAlive;
-            request.Timeout = 300 * 1000; // default apache timeout
+            request.KeepAlive = false;
+            request.Timeout = Timeout;
 
             request.Referer = Referer;
 
@@ -429,12 +430,15 @@ namespace MinimalHttp.Client
 
             HttpWebResponse response = null;
 
+            WebExceptionStatus webExceptionStatus = WebExceptionStatus.Success;
+
             try
             {
                 response = (HttpWebResponse) request.GetResponse();
             }
             catch (WebException ex)
             {
+                webExceptionStatus = ex.Status;
                 response = (HttpWebResponse) ex.Response;
             }
 
@@ -449,8 +453,8 @@ namespace MinimalHttp.Client
             }
 
             Location = response.ResponseUri.OriginalString;
-
-            return request.ServicePoint.Certificate != null ? new HttpResponse(response, new HttpCertificate(request.ServicePoint.Certificate)) : new HttpResponse(response);
+            
+            return request.ServicePoint.Certificate != null ? new HttpResponse(response, webExceptionStatus, new HttpCertificate(request.ServicePoint.Certificate)) : new HttpResponse(response, webExceptionStatus);
         }
     }
 }

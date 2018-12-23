@@ -8,6 +8,11 @@ namespace MinimalHttp.Client
     /// </summary>
     public class HttpUtilities
     {
+        /// <summary>
+        ///     Dns the resolve.
+        /// </summary>
+        /// <param name="urlIpOrHostname"></param>
+        /// <returns></returns>
         public static IPAddress DnsResolve(string urlIpOrHostname)
         {
             if (string.IsNullOrEmpty(urlIpOrHostname)) throw new ArgumentNullException(nameof(urlIpOrHostname));

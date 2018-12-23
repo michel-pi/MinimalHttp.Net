@@ -9,98 +9,20 @@ namespace MinimalHttp.Client
     public class HttpResponse
     {
         /// <summary>
-        ///     Prevents a default instance of the <see cref="HttpResponse" /> class from being created.
-        /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
-        private HttpResponse()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="HttpResponse" /> class.
-        /// </summary>
-        /// <param name="response">The response.</param>
-        /// <exception cref="ArgumentNullException">response</exception>
-        /// <exception cref="InvalidOperationException">HttpWebResponse is already disposed!</exception>
-        public HttpResponse(HttpWebResponse response)
-        {
-            if (response == null) throw new ArgumentNullException(nameof(response));
-
-            try
-            {
-                StatusCode = (int) response.StatusCode;
-            }
-            catch (ObjectDisposedException)
-            {
-                throw new InvalidOperationException("HttpWebResponse is already disposed!");
-            }
-
-            StatusDescription = response.StatusDescription;
-
-            CharacterSet = response.CharacterSet;
-
-            ContentEncoding = response.ContentEncoding;
-            ContentLength = response.ContentLength;
-            ContentType = response.ContentType;
-
-            Cookies = response.Cookies;
-
-            LastModified = response.LastModified;
-
-            Method = HelperMethods.StringToRequestMethod(response.Method);
-
-            ProtocolVersion = response.ProtocolVersion.ToString();
-
-            ResponseUri = response.ResponseUri;
-
-            Server = response.Server;
-
-            if (response.Headers == null) return;
-
-            string[] keys = response.Headers.AllKeys;
-
-            Headers = new HttpParameter[keys.Length];
-
-            for (int i = 0; i < keys.Length; i++)
-                Headers[i] = new HttpParameter(keys[i], response.Headers[keys[i]]);
-
-            try
-            {
-                using (var responseStream = response.GetResponseStream())
-                {
-                    using (var reader = new StreamReader(responseStream ?? throw new InvalidOperationException()))
-                    {
-                        Body = reader.ReadToEnd();
-                    }
-                }
-            }
-            catch
-            {
-                // ignored
-            }
-
-            response.Dispose();
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="T:MinimalHttp.Client.HttpResponse" /> class.
-        /// </summary>
-        /// <param name="response">The response.</param>
-        /// <param name="cert">The cert.</param>
-        public HttpResponse(HttpWebResponse response, HttpCertificate cert) : this(response)
-        {
-            Certificate = cert;
-        }
-
-        /// <summary>
         ///     Gets the status code.
         /// </summary>
         /// <value>
         ///     The status code.
         /// </value>
-        public int StatusCode { get; }
+        public HttpStatusCode StatusCode { get; }
+
+        /// <summary>
+        ///     Gets the web exception status.
+        /// </summary>
+        /// <value>
+        ///     The status web exception status.
+        /// </value>
+        public WebExceptionStatus WebExceptionStatus { get; }
 
         /// <summary>
         ///     Gets the status description.
@@ -213,5 +135,114 @@ namespace MinimalHttp.Client
         ///     The body.
         /// </value>
         public string Body { get; }
+
+        /// <summary>
+        ///     Prevents a default instance of the <see cref="HttpResponse" /> class from being created.
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        private HttpResponse()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="HttpResponse" /> class.
+        /// </summary>
+        /// <param name="response">The response.</param>
+        /// <exception cref="ArgumentNullException">response</exception>
+        /// <exception cref="InvalidOperationException">HttpWebResponse is already disposed!</exception>
+        public HttpResponse(HttpWebResponse response)
+        {
+            if (response == null) throw new ArgumentNullException(nameof(response));
+
+            WebExceptionStatus = WebExceptionStatus.Success;
+
+            try
+            {
+                StatusCode = response.StatusCode;
+            }
+            catch (ObjectDisposedException)
+            {
+                throw new InvalidOperationException("HttpWebResponse is already disposed!");
+            }
+
+            StatusDescription = response.StatusDescription;
+
+            CharacterSet = response.CharacterSet;
+
+            ContentEncoding = response.ContentEncoding;
+            ContentLength = response.ContentLength;
+            ContentType = response.ContentType;
+
+            Cookies = response.Cookies;
+
+            LastModified = response.LastModified;
+
+            Method = HelperMethods.StringToRequestMethod(response.Method);
+
+            ProtocolVersion = response.ProtocolVersion.ToString();
+
+            ResponseUri = response.ResponseUri;
+
+            Server = response.Server;
+
+            if (response.Headers == null) return;
+
+            string[] keys = response.Headers.AllKeys;
+
+            Headers = new HttpParameter[keys.Length];
+
+            for (int i = 0; i < keys.Length; i++)
+                Headers[i] = new HttpParameter(keys[i], response.Headers[keys[i]]);
+
+            try
+            {
+                using (var responseStream = response.GetResponseStream())
+                {
+                    using (var reader = new StreamReader(responseStream ?? throw new InvalidOperationException()))
+                    {
+                        Body = reader.ReadToEnd();
+                    }
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+
+            response.Dispose();
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="HttpResponse" /> class.
+        /// </summary>
+        /// <param name="response"></param>
+        /// <param name="status"></param>
+        public HttpResponse(HttpWebResponse response, WebExceptionStatus status) : this(response)
+        {
+            WebExceptionStatus = status;
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="T:MinimalHttp.Client.HttpResponse" /> class.
+        /// </summary>
+        /// <param name="response">The response.</param>
+        /// <param name="cert">The cert.</param>
+        public HttpResponse(HttpWebResponse response, HttpCertificate cert) : this(response)
+        {
+            Certificate = cert;
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="HttpResponse" /> class.
+        /// </summary>
+        /// <param name="response"></param>
+        /// <param name="status"></param>
+        /// <param name="cert"></param>
+        public HttpResponse(HttpWebResponse response, WebExceptionStatus status, HttpCertificate cert) : this(response, cert)
+        {
+            WebExceptionStatus = status;
+        }
     }
 }
