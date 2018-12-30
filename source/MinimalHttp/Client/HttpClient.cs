@@ -351,6 +351,7 @@ namespace MinimalHttp.Client
             var request = WebRequest.CreateHttp(uri);
 
             if (CertificateValidationCallback != null)
+            {
                 request.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) =>
                 {
                     var callback = CertificateValidationCallback;
@@ -359,7 +360,8 @@ namespace MinimalHttp.Client
 
                     return callback.Invoke(new HttpCertificate(certificate));
                 };
-
+            }
+            
             request.AllowAutoRedirect = AllowAutoRedirect;
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             request.CookieContainer = _cookieContainer;
@@ -367,6 +369,8 @@ namespace MinimalHttp.Client
             request.Timeout = Timeout;
 
             request.Referer = Referer;
+
+            request.UserAgent = UserAgent;
 
             request.CachePolicy = new RequestCachePolicy(RequestCacheLevel.BypassCache);
 
