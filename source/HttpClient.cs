@@ -8,6 +8,7 @@ using System.Net.Cache;
 using System.Collections.Generic;
 
 using MinimalHttp.Utilities;
+using System.Collections.Specialized;
 
 namespace MinimalHttp
 {
@@ -88,7 +89,7 @@ namespace MinimalHttp
         /// <summary>
         /// Gets a List containing all http headers to be send with the next http request.
         /// </summary>
-        public List<HttpHeader> Headers { get; private set; }
+        public WebHeaderCollection Headers { get; private set; }
         /// <summary>
         /// Gets a CookieCollection containing all cookies to be send with the next http request.
         /// </summary>
@@ -97,7 +98,7 @@ namespace MinimalHttp
         /// <summary>
         /// Gets a Boolean indicating whether this HttpClient has any HttpHeaders.
         /// </summary>
-        public bool HasHeaders => Headers.Count != 0;
+        public bool HasHeaders => Headers != null && Headers.Count != 0;
         /// <summary>
         /// Gets a Boolean indicating whether this HttpClient has any Cookies.
         /// </summary>
@@ -127,7 +128,7 @@ namespace MinimalHttp
 
             Encoding = DefaultEncoding;
 
-            Headers = new List<HttpHeader>();
+            Headers = new WebHeaderCollection();
 
             Cookies = new CookieCollection();
         }
@@ -171,9 +172,12 @@ namespace MinimalHttp
                 client.Proxy = new HttpProxy(Proxy.Address, Proxy.Port, Proxy.Username, Proxy.Password);
             }
 
-            foreach (var header in EnumerateHeadersSafe())
+            if (HasHeaders)
             {
-                client.Headers.Add(header);
+                foreach (var header in EnumerateHeadersSafe())
+                {
+                    client.Headers.Add(header.Name, header.Value);
+                }
             }
 
             if (HasCookies)
@@ -836,17 +840,17 @@ namespace MinimalHttp
             {
                 lock (_lock)
                 {
-                    foreach (var header in Headers)
+                    for (int i = 0; i < Headers.Count; i++)
                     {
-                        yield return header;
+                        yield return new HttpHeader(Headers.GetKey(i), Headers.Get(i));
                     }
                 }
             }
             else
             {
-                foreach (var header in Headers)
+                for (int i = 0; i < Headers.Count; i++)
                 {
-                    yield return header;
+                    yield return new HttpHeader(Headers.GetKey(i), Headers.Get(i));
                 }
             }
         }
