@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
 
 using MinimalHttp.Utilities;
 
@@ -74,13 +71,11 @@ namespace MinimalHttp
 
             if (HasValue)
             {
-                return Value.EndsWith(";")
-                    ? Name + ": " + Value
-                    : Name + ": " + Value + ";";
+                return Name + ": " + Value;
             }
             else
             {
-                return Name + ": ;";
+                return Name + ": ";
             }
         }
     }

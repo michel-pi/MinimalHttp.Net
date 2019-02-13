@@ -616,7 +616,7 @@ namespace MinimalHttp
             {
                 foreach (var header in EnumerateHeadersSafe())
                 {
-                    request.Headers.Add(header.ToString());
+                    request.Headers.Add(header.Name, header.Value);
                 }
             }
 
