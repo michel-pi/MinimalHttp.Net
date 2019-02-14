@@ -25,6 +25,10 @@ namespace MinimalHttp.Utilities
         public const string AUDIO_WEBM = "audio/webm";
 
         /// <summary>
+        /// All characters are encoded before sent (spaces are converted to "+" symbols, and special characters are converted to ASCII HEX values)
+        /// </summary>
+        public const string APPLICATION_FORM_URLENCODED = "application/x-www-form-urlencoded";
+        /// <summary>
         /// Gets the mime type used for binary data.
         /// </summary>
         public const string APPLICATION_OCTET_STREAM = "application/octet-stream";
