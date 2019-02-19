@@ -22,9 +22,21 @@ namespace MinimalHttp
         public bool HasHeaders => Headers != null && Headers.Count != 0;
 
         /// <summary>
+        /// Gets a Boolean indicating whether this response has thrown an exception.
+        /// </summary>
+        public bool HasException => Exception != null;
+
+        /// <summary>
         /// Gets A Boolean indicating whether this response is succeed.
         /// </summary>
-        public bool IsSuccess => ExceptionStatus == WebExceptionStatus.Success && (int)StatusCode < 400;
+        public bool IsSuccess => ExceptionStatus == WebExceptionStatus.Success
+            && Exception == null
+            && ((int)StatusCode > 199 && (int)StatusCode < 400);
+
+        /// <summary>
+        /// Gets the exception thrown while executing the request or null.
+        /// </summary>
+        public Exception Exception { get; private set; }
 
         /// <summary>
         /// Gets the HttpStatusCode returned by the web server.
@@ -103,7 +115,44 @@ namespace MinimalHttp
 
         private HttpResponse()
         {
-            throw new NotImplementedException();
+            Exception = null;
+            StatusCode = (HttpStatusCode)0;
+            StatusDescription = string.Empty;
+            ExceptionStatus = WebExceptionStatus.Success;
+            Server = string.Empty;
+            ResponseUri = null;
+            ProtocolVersion = new Version(0, 0, 0, 0);
+            RequestMethod = RequestMethod.Unknown;
+            Certificate = null;
+            Headers = new List<HttpHeader>();
+            Cookies = new CookieCollection();
+            LastModified = default(DateTime);
+            ContentEncoding = string.Empty;
+            ContentType = string.Empty;
+            ContentLength = 0L;
+            CharacterSet = string.Empty;
+            Body = string.Empty;
+        }
+
+        /// <summary>
+        /// Initializes a new HttpResponse using the given Exception
+        /// </summary>
+        /// <param name="exception">The Exception.</param>
+        public HttpResponse(Exception exception) : this()
+        {
+            Exception = exception ?? throw new ArgumentNullException(nameof(exception));
+            ExceptionStatus = WebExceptionStatus.UnknownError;
+        }
+
+        /// <summary>
+        /// Initializes a new HttpResponse using the given Exception and status code.
+        /// </summary>
+        /// <param name="exception">The Exception.</param>
+        /// <param name="exceptionStatus">The WebExceptionStatus code.</param>
+        public HttpResponse(Exception exception, WebExceptionStatus exceptionStatus) : this()
+        {
+            Exception = exception ?? throw new ArgumentNullException(nameof(exception));
+            ExceptionStatus = exceptionStatus;
         }
 
         /// <summary>
@@ -111,8 +160,10 @@ namespace MinimalHttp
         /// </summary>
         /// <param name="response">The HttpWebResponse returned by the http request.</param>
         /// <param name="certificate">The HttpCertificate used with the http request.</param>
-        public HttpResponse(HttpWebResponse response, HttpCertificate certificate = null)
+        public HttpResponse(HttpWebResponse response, HttpCertificate certificate = null) : this()
         {
+            if (response == null) throw new ArgumentNullException(nameof(response));
+            
             StatusCode = response.StatusCode;
             StatusDescription = response.StatusDescription;
 
@@ -126,9 +177,7 @@ namespace MinimalHttp
             RequestMethod = HttpHelperMethods.RequestMethodFromString(response.Method);
 
             Certificate = certificate;
-
-            Headers = new List<HttpHeader>();
-
+            
             if (response.Headers != null && response.Headers.Count != 0)
             {
                 foreach (var key in response.Headers.AllKeys)
@@ -137,7 +186,10 @@ namespace MinimalHttp
                 }
             }
 
-            Cookies = response.Cookies;
+            if (response.Cookies != null)
+            {
+                Cookies = response.Cookies;
+            }
 
             LastModified = response.LastModified;
 
@@ -170,10 +222,12 @@ namespace MinimalHttp
         /// Initializes a new HttpResponse using the given HttpWebResponse, the WebExceptionStatus and optionally a HttpCertificate.
         /// </summary>
         /// <param name="response">The HttpWebResponse returned by the http request.</param>
+        /// <param name="exception">The Exception.</param>
         /// <param name="exceptionStatus">The WebExceptionStatus returned by the WebRequest.</param>
         /// <param name="certificate">The HttpCertificate used with the http request.</param>
-        public HttpResponse(HttpWebResponse response, WebExceptionStatus exceptionStatus, HttpCertificate certificate = null) : this(response, certificate)
+        public HttpResponse(HttpWebResponse response, Exception exception, WebExceptionStatus exceptionStatus, HttpCertificate certificate = null) : this(response, certificate)
         {
+            Exception = exception;
             ExceptionStatus = exceptionStatus;
             Certificate = certificate;
         }

@@ -572,120 +572,107 @@ namespace MinimalHttp
             if (method == RequestMethod.Unknown) throw new ArgumentOutOfRangeException(nameof(method));
             if (string.IsNullOrEmpty(nameof(url))) throw new ArgumentNullException(nameof(url));
 
-            if (Encoding == null) Encoding = DefaultEncoding;
-
-            var uri = HttpHelperMethods.CreateUri(url);
-
-            SetLocationSafe(url);
-
-            if (ClearReferer)
-            {
-                SetRefererSafe(string.Empty);
-            }
-            
-            var request = WebRequest.CreateHttp(uri);
-
-            request.Method = HttpHelperMethods.RequestMethodToString(method);
-            request.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
-            request.AllowAutoRedirect = FollowRedirects;
-            request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
-            request.CookieContainer = GetCookiesSafe();
-            request.KeepAlive = KeepAlive;
-            request.Timeout = Timeout;
-            request.Referer = Referer;
-            request.UserAgent = UserAgent;
-            request.CachePolicy = DisableCaching
-                ? new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore)
-                : new RequestCachePolicy(RequestCacheLevel.Default);
-
-            if (!string.IsNullOrEmpty(Host))
-            {
-                request.Host = Host;
-            }
-
-            if (HasProxy)
-            {
-                request.Proxy = Proxy.WebProxy;
-                request.Credentials = Proxy.Credentials;
-                request.UseDefaultCredentials = !Proxy.HasCredentials;
-            }
-            else
-            {
-                request.Proxy = null;
-                request.Credentials = null;
-                request.UseDefaultCredentials = false;
-            }
-
-            if (HasHeaders)
-            {
-                foreach (var header in EnumerateHeadersSafe())
-                {
-                    request.Headers.Add(header.Name, header.Value);
-                }
-            }
-
-            if (string.IsNullOrEmpty(contentType))
-            {
-                request.ContentType = string.Empty;
-            }
-            else
-            {
-                request.ContentType = contentType;
-            }
-
-            if (data != null && data.Length != 0)
-            {
-                request.ContentLength = data.Length;
-
-                using (var stream = request.GetRequestStream())
-                {
-                    stream.Write(data, 0, data.Length);
-                }
-            }
-            else
-            {
-                request.ContentLength = 0;
-            }
-
-            HttpWebResponse response = null;
-            WebException exception = null;
-            WebExceptionStatus exceptionStatus = WebExceptionStatus.Success;
-
             try
             {
-                response = (HttpWebResponse)request.GetResponse();
-            }
-            catch (WebException ex)
-            {
-                exception = ex;
-                exceptionStatus = ex.Status;
-                
-                if (ex.Response != null)
+                if (Encoding == null) Encoding = DefaultEncoding;
+
+                var uri = HttpHelperMethods.CreateUri(url);
+
+                SetLocationSafe(url);
+
+                if (ClearReferer)
                 {
-                    response = (HttpWebResponse)ex.Response;
+                    SetRefererSafe(string.Empty);
+                }
+
+                var request = WebRequest.CreateHttp(uri);
+
+                request.Method = HttpHelperMethods.RequestMethodToString(method);
+                request.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
+                request.AllowAutoRedirect = FollowRedirects;
+                request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
+                request.CookieContainer = GetCookiesSafe();
+                request.KeepAlive = KeepAlive;
+                request.Timeout = Timeout;
+                request.Referer = Referer;
+                request.UserAgent = UserAgent;
+                request.CachePolicy = DisableCaching
+                    ? new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore)
+                    : new RequestCachePolicy(RequestCacheLevel.Default);
+
+                if (!string.IsNullOrEmpty(Host))
+                {
+                    request.Host = Host;
+                }
+
+                if (HasProxy)
+                {
+                    request.Proxy = Proxy.WebProxy;
+                    request.Credentials = Proxy.Credentials;
+                    request.UseDefaultCredentials = !Proxy.HasCredentials;
                 }
                 else
                 {
-                    throw;
+                    request.Proxy = null;
+                    request.Credentials = null;
+                    request.UseDefaultCredentials = false;
+                }
+
+                if (HasHeaders)
+                {
+                    foreach (var header in EnumerateHeadersSafe())
+                    {
+                        request.Headers.Add(header.Name, header.Value);
+                    }
+                }
+
+                if (string.IsNullOrEmpty(contentType))
+                {
+                    request.ContentType = string.Empty;
+                }
+                else
+                {
+                    request.ContentType = contentType;
+                }
+
+                if (data != null && data.Length != 0)
+                {
+                    request.ContentLength = data.Length;
+
+                    using (var stream = request.GetRequestStream())
+                    {
+                        stream.Write(data, 0, data.Length);
+                    }
+                }
+                else
+                {
+                    request.ContentLength = 0;
+                }
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                
+                if (response.Cookies != null && response.Cookies.Count != 0)
+                {
+                    AddCookiesSafe(response.Cookies);
+                }
+
+                SetLocationSafe(response.ResponseUri.OriginalString);
+
+                return request.ServicePoint.Certificate == null
+                    ? new HttpResponse(response)
+                    : new HttpResponse(response, new HttpCertificate(request.ServicePoint.Certificate));
+            }
+            catch (WebException webException)
+            {
+                if (webException.Response == null)
+                {
+                    return new HttpResponse((HttpWebResponse)webException.Response, webException, webException.Status);
+                }
+                else
+                {
+                    return new HttpResponse(webException, webException.Status);
                 }
             }
-            
-            if (response.ResponseUri == null)
-            {
-                response.Dispose();
-                throw exception;
-            }
-
-            if (response.Cookies != null && response.Cookies.Count != 0)
-            {
-                AddCookiesSafe(response.Cookies);
-            }
-
-            SetLocationSafe(response.ResponseUri.OriginalString);
-
-            return request.ServicePoint.Certificate == null
-                ? new HttpResponse(response, exceptionStatus)
-                : new HttpResponse(response, exceptionStatus, new HttpCertificate(request.ServicePoint.Certificate));
         }
         /// <summary>
         /// Sends an async http request using the given method and data to the resource url.
@@ -701,15 +688,14 @@ namespace MinimalHttp
         private bool ServerCertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors policyErrors)
         {
             if (AllowInvalidCertificates) return true;
-            if (policyErrors == SslPolicyErrors.None || policyErrors == SslPolicyErrors.RemoteCertificateNotAvailable) return true;
-
+            
             var callback = CertificateValidationCallback;
 
             HttpCertificate httpCertificate = new HttpCertificate(certificate);
 
             if (callback == null)
             {
-                return !httpCertificate.IsExpired && httpCertificate.Verify();
+                return policyErrors == SslPolicyErrors.None && !httpCertificate.IsExpired && httpCertificate.Verify();
             }
             else
             {
