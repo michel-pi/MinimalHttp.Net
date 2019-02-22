@@ -572,10 +572,10 @@ namespace MinimalHttp
             if (method == RequestMethod.Unknown) throw new ArgumentOutOfRangeException(nameof(method));
             if (string.IsNullOrEmpty(nameof(url))) throw new ArgumentNullException(nameof(url));
 
+            if (Encoding == null) Encoding = DefaultEncoding;
+
             try
             {
-                if (Encoding == null) Encoding = DefaultEncoding;
-
                 var uri = HttpHelperMethods.CreateUri(url);
 
                 SetLocationSafe(url);
@@ -666,11 +666,11 @@ namespace MinimalHttp
             {
                 if (webException.Response == null)
                 {
-                    return new HttpResponse((HttpWebResponse)webException.Response, webException, webException.Status);
+                    return new HttpResponse(webException, webException.Status);
                 }
                 else
                 {
-                    return new HttpResponse(webException, webException.Status);
+                    return new HttpResponse((HttpWebResponse)webException.Response, webException, webException.Status);
                 }
             }
         }
