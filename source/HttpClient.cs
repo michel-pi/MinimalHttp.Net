@@ -587,8 +587,12 @@ namespace MinimalHttp
 
                 var request = WebRequest.CreateHttp(uri);
 
+                if (CertificateValidationCallback != null)
+                {
+                    request.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
+                }
+                
                 request.Method = HttpHelperMethods.RequestMethodToString(method);
-                request.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
                 request.AllowAutoRedirect = FollowRedirects;
                 request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
                 request.CookieContainer = GetCookiesSafe();
@@ -695,7 +699,7 @@ namespace MinimalHttp
 
             if (callback == null)
             {
-                return policyErrors == SslPolicyErrors.None && !httpCertificate.IsExpired && httpCertificate.Verify();
+                return policyErrors == SslPolicyErrors.None && !httpCertificate.IsExpired;
             }
             else
             {
