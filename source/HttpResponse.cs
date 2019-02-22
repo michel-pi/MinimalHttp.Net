@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Collections.Generic;
 
 using MinimalHttp.Utilities;
@@ -113,6 +114,11 @@ namespace MinimalHttp
         /// </summary>
         public string Body { get; private set; }
 
+        /// <summary>
+        /// Gets a byte[] representing the raw Body
+        /// </summary>
+        public byte[] RawBody { get; private set; }
+
         private HttpResponse()
         {
             Exception = null;
@@ -204,15 +210,20 @@ namespace MinimalHttp
             {
                 using (var responseStream = response.GetResponseStream())
                 {
-                    using (var reader = new StreamReader(responseStream ?? throw new InvalidOperationException()))
+                    using (var ms = new MemoryStream())
                     {
-                        Body = reader.ReadToEnd();
+                        responseStream.CopyTo(ms);
+
+                        RawBody = ms.ToArray();
                     }
                 }
+
+                Body = Encoding.UTF8.GetString(RawBody);
             }
             catch
             {
                 Body = string.Empty;
+                RawBody = null;
             }
 
             response.Dispose();
